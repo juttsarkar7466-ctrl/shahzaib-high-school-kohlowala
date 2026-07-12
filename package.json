@@ -1,0 +1,17 @@
+{
+  "name": "shahzaib-high-school",
+  "version": "1.0.0",
+  "description": "Shahzaib High School Kohlowala Website with MongoDB",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mongoose": "^8.0.0",
+    "multer": "^1.4.5-lts.1"
+  }
+}
