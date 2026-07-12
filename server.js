@@ -128,115 +128,142 @@ app.post('/admin/login', async (req, res) => {
     }
 });
 
-// Admin Form Actions
+// Admin Form Actions (With Error Handling to prevent 502)
 app.post('/admin/upload-photo', isAuthenticated, async (req, res) => {
-    await Photo.create({ url: req.body.photo_url, caption: req.body.caption });
-    res.redirect('/admin/dashboard');
+    try {
+        if(req.body.photo_url && req.body.caption) {
+            await Photo.create({ url: req.body.photo_url.trim(), caption: req.body.caption.trim() });
+        }
+        res.redirect('/admin/dashboard');
+    } catch (err) {
+        console.error("Photo Upload Error:", err);
+        res.send("<h3>Photo save nahi ho saki. Database slow hai. <a href='/admin/dashboard'>Wapas Dashboard</a></h3>");
+    }
 });
 
 app.post('/admin/add-notice', isAuthenticated, async (req, res) => {
-    await Notice.create({ text: req.body.notice_text, date: new Date().toLocaleDateString() });
-    res.redirect('/admin/dashboard');
+    try {
+        await Notice.create({ text: req.body.notice_text, date: new Date().toLocaleDateString() });
+        res.redirect('/admin/dashboard');
+    } catch (err) {
+        res.send("<h3>Notice add nahi ho saka. <a href='/admin/dashboard'>Wapas Dashboard</a></h3>");
+    }
 });
 
 app.post('/admin/upload-result', isAuthenticated, async (req, res) => {
-    await Result.create(req.body);
-    res.redirect('/admin/dashboard');
+    try {
+        await Result.create(req.body);
+        res.redirect('/admin/dashboard');
+    } catch (err) {
+        res.send("<h3>Result save nahi ho saka. <a href='/admin/dashboard'>Wapas Dashboard</a></h3>");
+    }
 });
 
 app.post('/admin/change-password', isAuthenticated, async (req, res) => {
-    if (req.body.new_password.trim().length < 5) return res.send("<h3>Password chota hai!</h3>");
-    await Creds.updateOne({}, { password: req.body.new_password.trim() });
-    res.send("<h3>🔐 Password Kamyabi Se Badal Gaya!</h3><a href='/admin/dashboard'>Wapas Dashboard</a>");
+    try {
+        if (req.body.new_password.trim().length < 5) return res.send("<h3>Password chota hai!</h3>");
+        await Creds.updateOne({}, { password: req.body.new_password.trim() });
+        res.send("<h3>🔐 Password Kamyabi Se Badal Gaya!</h3><a href='/admin/dashboard'>Wapas Dashboard</a>");
+    } catch {
+        res.send("Password update nahi ho saka.");
+    }
 });
 
 // Direct MongoDB Delete Engine
 app.get('/admin/delete/:type/:id', isAuthenticated, async (req, res) => {
-    const { type, id } = req.params;
-    if (type === 'notices') await Notice.findByIdAndDelete(id);
-    if (type === 'photos') await Photo.findByIdAndDelete(id);
-    if (type === 'messages') await Message.findByIdAndDelete(id);
-    if (type === 'admissions') {
-        const Admission = mongoose.model('Admission');
-        await Admission.findByIdAndDelete(id);
+    try {
+        const { type, id } = req.params;
+        if (type === 'notices') await Notice.findByIdAndDelete(id);
+        if (type === 'photos') await Photo.findByIdAndDelete(id);
+        if (type === 'messages') await Message.findByIdAndDelete(id);
+        if (type === 'admissions') {
+            const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
+            await Admission.findByIdAndDelete(id);
+        }
+        res.redirect('/admin/dashboard');
+    } catch (err) {
+        res.redirect('/admin/dashboard');
     }
-    res.redirect('/admin/dashboard');
 });
 
 // Dashboard UI
 app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
-    const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
-    const admissions = await Admission.find();
-    const messages = await Message.find();
-    const notices = await Notice.find();
-    const photos = await Photo.find();
+    try {
+        const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
+        const admissions = await Admission.find().maxTimeMS(5000); // 5 sec timeout to avoid 502
+        const messages = await Message.find().maxTimeMS(5000);
+        const notices = await Notice.find().maxTimeMS(5000);
+        const photos = await Photo.find().maxTimeMS(5000);
 
-    const admissionRows = admissions.map(u => `<tr><td>${u.student_name}</td><td>${u.father_name}</td><td>${u.student_class}</td><td>${u.phone}</td><td><a href="/admin/delete/admissions/${u._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
-    const messageRows = messages.map(m => `<tr><td>${m.name}</td><td>${m.phone}</td><td>${m.msg}</td><td>${m.date}</td><td><a href="/admin/delete/messages/${m._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
-    const noticeRows = notices.map(n => `<li>${n.text} (${n.date}) - <a href="/admin/delete/notices/${n._id}" style="color:red;">Khatam Karen</a></li>`).join('');
-    const photoRows = photos.map(p => `<li>${p.caption} - <a href="/admin/delete/photos/${p._id}" style="color:red;">Delete Photo</a></li>`).join('');
+        const admissionRows = admissions.map(u => `<tr><td>${u.student_name}</td><td>${u.father_name}</td><td>${u.student_class}</td><td>${u.phone}</td><td><a href="/admin/delete/admissions/${u._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
+        const messageRows = messages.map(m => `<tr><td>${m.name}</td><td>${m.phone}</td><td>${m.msg}</td><td>${m.date}</td><td><a href="/admin/delete/messages/${m._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
+        const noticeRows = notices.map(n => `<li>${n.text} (${n.date}) - <a href="/admin/delete/notices/${n._id}" style="color:red;">Khatam Karen</a></li>`).join('');
+        const photoRows = photos.map(p => `<li>${p.caption} - <a href="/admin/delete/photos/${p._id}" style="color:red;">Delete Photo</a></li>`).join('');
 
-    let yearOptions = ''; for(let y=2026; y>=2010; y--) yearOptions += `<option value="${y}">${y}</option>`;
+        let yearOptions = ''; for(let y=2026; y>=2010; y--) yearOptions += `<option value="${y}">${y}</option>`;
 
-    res.send(`
-        <html lang="en">
-        <head><title>Admin Dashboard</title><style>body{font-family:sans-serif;margin:20px;background:#f4f6f9;} th,td{padding:10px;border:1px solid #ddd;text-align:left;} table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px;} .card{background:#fff;padding:20px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.05);margin-bottom:20px;} input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head>
-        <body>
-            <div style="display:flex;justify-content:space-between;align-items:center;background:#0b2240;color:white;padding:15px 30px;border-radius:6px;">
-                <h2>🏫 Shahzaib High School - MongoDB Dashboard</h2>
-                <a href="/admin/logout" style="background:red;color:white;padding:10px 15px;text-decoration:none;font-weight:bold;border-radius:4px;">Logout</a>
-            </div>
-            <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;">
-                <div class="card" style="flex:1;min-width:250px;background:#fff3cd;">
-                    <h3>🔐 Change Admin Password</h3>
-                    <form action="/admin/change-password" method="POST">
-                        <input type="text" name="new_password" placeholder="Enter New Secure Password" required>
-                        <button type="submit" style="background:#28a745;color:white;padding:10px;border:none;cursor:pointer;width:100%;font-weight:bold;">Update Password</button>
-                    </form>
+        res.send(`
+            <html lang="en">
+            <head><title>Admin Dashboard</title><style>body{font-family:sans-serif;margin:20px;background:#f4f6f9;} th,td{padding:10px;border:1px solid #ddd;text-align:left;} table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px;} .card{background:#fff;padding:20px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.05);margin-bottom:20px;} input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head>
+            <body>
+                <div style="display:flex;justify-content:between;align-items:center;background:#0b2240;color:white;padding:15px 30px;border-radius:6px;">
+                    <h2>🏫 Shahzaib High School - MongoDB Dashboard</h2>
+                    <a href="/admin/logout" style="background:red;color:white;padding:10px 15px;text-decoration:none;font-weight:bold;border-radius:4px;margin-left:auto;">Logout</a>
                 </div>
-                <div class="card" style="flex:1;min-width:300px;">
-                    <h3>📢 Notice Board (New Announcement)</h3>
-                    <form action="/admin/add-notice" method="POST">
-                        <input type="text" name="notice_text" placeholder="e.g., Garmiyon ki chuttiyan 15 June se..." required>
-                        <button type="submit" style="background:#007bff;color:white;padding:10px;border:none;cursor:pointer;">Publish Announcement</button>
-                    </form>
-                    <h4>Active Notices:</h4><ul>${noticeRows || '<li>No active elanaat.</li>'}</ul>
+                <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;">
+                    <div class="card" style="flex:1;min-width:250px;background:#fff3cd;">
+                        <h3>🔐 Change Admin Password</h3>
+                        <form action="/admin/change-password" method="POST">
+                            <input type="text" name="new_password" placeholder="Enter New Secure Password" required>
+                            <button type="submit" style="background:#28a745;color:white;padding:10px;border:none;cursor:pointer;width:100%;font-weight:bold;">Update Password</button>
+                        </form>
+                    </div>
+                    <div class="card" style="flex:1;min-width:300px;">
+                        <h3>📢 Notice Board (New Announcement)</h3>
+                        <form action="/admin/add-notice" method="POST">
+                            <input type="text" name="notice_text" placeholder="e.g., Garmiyon ki chuttiyan 15 June se..." required>
+                            <button type="submit" style="background:#007bff;color:white;padding:10px;border:none;cursor:pointer;">Publish Announcement</button>
+                        </form>
+                        <h4>Active Notices:</h4><ul>${noticeRows || '<li>No active elanaat.</li>'}</ul>
+                    </div>
                 </div>
-            </div>
-            <div style="display:flex;gap:20px;flex-wrap:wrap;">
-                <div class="card" style="flex:1;min-width:300px;">
-                    <h3>🖼️ Manage School Photos</h3>
-                    <form action="/admin/upload-photo" method="POST">
-                        <input type="text" name="photo_url" placeholder="Paste Image Link" required>
-                        <input type="text" name="caption" placeholder="Photo Description" required>
-                        <button type="submit" style="background:green;color:white;padding:10px;border:none;cursor:pointer;">Add Photo</button>
-                    </form>
-                    <h4>Current Photos:</h4><ul>${photoRows || '<li>No photos uploaded.</li>'}</ul>
+                <div style="display:flex;gap:20px;flex-wrap:wrap;">
+                    <div class="card" style="flex:1;min-width:300px;">
+                        <h3>🖼️ Manage School Photos</h3>
+                        <form action="/admin/upload-photo" method="POST">
+                            <input type="text" name="photo_url" placeholder="Paste Image Link" required>
+                            <input type="text" name="caption" placeholder="Photo Description" required>
+                            <button type="submit" style="background:green;color:white;padding:10px;border:none;cursor:pointer;">Add Photo</button>
+                        </form>
+                        <h4>Current Photos:</h4><ul>${photoRows || '<li>No photos uploaded.</li>'}</ul>
+                    </div>
+                    <div class="card" style="flex:2;min-width:400px;">
+                        <h3>📊 Add Results</h3>
+                        <form action="/admin/upload-result" method="POST" style="display:flex;flex-wrap:wrap;gap:10px;">
+                            <input type="text" name="roll_no" placeholder="Roll No" required style="width:48%;">
+                            <input type="text" name="student_name" placeholder="Student Name" required style="width:48%;">
+                            <select name="student_class" required style="width:48%;"><option value="">Class</option>${Array.from({length:10},(_,i)=>`<option value="Class ${i+1}">Class ${i+1}</option>`).join('')}</select>
+                            <select name="year" required style="width:48%;"><option value="">Year</option>${yearOptions}</select>
+                            <input type="text" name="marks" placeholder="Marks (450/500)" required style="width:48%;">
+                            <select name="status" style="width:48%;"><option value="Pass">Pass</option><option value="Fail">Fail</option></select>
+                            <button type="submit" style="background:blue;color:white;padding:10px 20px;border:none;cursor:pointer;font-weight:bold;border-radius:4px;">Save Student Result</button>
+                        </form>
+                    </div>
                 </div>
-                <div class="card" style="flex:2;min-width:400px;">
-                    <h3>📊 Add Results</h3>
-                    <form action="/admin/upload-result" method="POST" style="display:flex;flex-wrap:wrap;gap:10px;">
-                        <input type="text" name="roll_no" placeholder="Roll No" required style="width:48%;">
-                        <input type="text" name="student_name" placeholder="Student Name" required style="width:48%;">
-                        <select name="student_class" required style="width:48%;"><option value="">Class</option>${Array.from({length:10},(_,i)=>`<option value="Class ${i+1}">Class ${i+1}</option>`).join('')}</select>
-                        <select name="year" required style="width:48%;"><option value="">Year</option>${yearOptions}</select>
-                        <input type="text" name="marks" placeholder="Marks (450/500)" required style="width:48%;">
-                        <select name="status" style="width:48%;"><option value="Pass">Pass</option><option value="Fail">Fail</option></select>
-                        <button type="submit" style="background:blue;color:white;padding:10px 20px;border:none;cursor:pointer;font-weight:bold;border-radius:4px;">Save Student Result</button>
-                    </form>
+                <div class="card">
+                    <h3>📥 Received Admission Applications</h3>
+                    <table><tr style="background:#0b2240;color:white;"><th>Name</th><th>Father Name</th><th>Class</th><th>Phone</th><th>Action</th></tr>${admissionRows || '<tr><td colspan="5" style="text-align:center;color:gray;">No admissions yet.</td></tr>'}</table>
                 </div>
-            </div>
-            <div class="card">
-                <h3>📥 Received Admission Applications</h3>
-                <table><tr style="background:#0b2240;color:white;"><th>Name</th><th>Father Name</th><th>Class</th><th>Phone</th><th>Action</th></tr>${admissionRows || '<tr><td colspan="5" style="text-align:center;color:gray;">No admissions yet.</td></tr>'}</table>
-            </div>
-            <div class="card">
-                <h3>✉️ Parents/Students Inbox</h3>
-                <table><tr style="background:#e3f2fd;"><th>Sender Name</th><th>Phone Number</th><th>Message</th><th>Date Received</th><th>Action</th></tr>${messageRows || '<tr><td colspan="5" style="text-align:center;color:gray;">Inbox khaali hai.</td></tr>'}</table>
-            </div>
-        </body>
-        </html>
-    `);
+                <div class="card">
+                    <h3>✉️ Parents/Students Inbox</h3>
+                    <table><tr style="background:#e3f2fd;"><th>Sender Name</th><th>Phone Number</th><th>Message</th><th>Date Received</th><th>Action</th></tr>${messageRows || '<tr><td colspan="5" style="text-align:center;color:gray;">Inbox khaali hai.</td></tr>'}</table>
+                </div>
+            </body>
+            </html>
+        `);
+    } catch (err) {
+        res.send("<h3>Dashboard load karne me masla aaya. Page ko refresh karein.</h3>");
+    }
 });
 
 // Admin Logout Route
@@ -246,5 +273,5 @@ app.get('/admin/logout', (req, res) => {
     });
 });
 
-// Start listening immediately so Render doesn't time out with a 502 error
+// Start listening immediately
 app.listen(PORT, () => console.log(`🚀 Server running perfectly on port ${PORT}`));
