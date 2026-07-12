@@ -9,9 +9,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const upload = multer({ dest: 'uploads/' });
 
-// 🔗 MongoDB Connection Link (Aapka Password aur Cluster Configured Hai)
+// 🔗 MongoDB Connection Link
 const MONGO_URI = "mongodb+srv://cheeta_db_user:Bea0N89rCALt17Oz@cluster0.z3upua5.mongodb.net/schoolDB?retryWrites=true&w=majority";
 
+// Database Connection (Without crashing the server)
 mongoose.connect(MONGO_URI)
     .then(() => console.log("🎉 MongoDB Server Se Connect Ho Gaya Hai!"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
@@ -25,13 +26,18 @@ const Creds = mongoose.model('Cred', { email: String, password: String });
 
 // Default Admin Credentials Setup
 async function initAdmin() {
-    const count = await Creds.countDocuments();
-    if (count === 0) {
-        await Creds.create({ email: "juttsarkar7466@gmail.com", password: "JuttSSMarket@2026!" });
+    try {
+        const count = await Creds.countDocuments();
+        if (count === 0) {
+            await Creds.create({ email: "juttsarkar7466@gmail.com", password: "JuttSSMarket@2026!" });
+        }
+    } catch (err) {
+        console.error("Admin initialization error:", err);
     }
 }
 initAdmin();
 
+// Middlewares
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -49,29 +55,51 @@ function isAuthenticated(req, res, next) {
 }
 
 // Public APIs (Fetches directly from MongoDB)
-app.get('/api/photos', async (req, res) => res.json(await Photo.find()));
-app.get('/api/notices', async (req, res) => res.json(await Notice.find()));
+app.get('/api/photos', async (req, res) => {
+    try { res.json(await Photo.find()); } catch { res.json([]); }
+});
+
+app.get('/api/notices', async (req, res) => {
+    try { res.json(await Notice.find()); } catch { res.json([]); }
+});
 
 app.get('/api/search-result', async (req, res) => {
-    const { roll_no, year } = req.query;
-    const studentResult = await Result.findOne({ roll_no: roll_no.trim(), year: year.trim() });
-    if (studentResult) res.json({ success: true, data: studentResult });
-    else res.json({ success: false, message: "Result nahi mila! Roll Number ya Saal check karein." });
+    try {
+        const { roll_no, year } = req.query;
+        if (!roll_no || !year) return res.json({ success: false, message: "Roll number aur saal lazmi hain." });
+        
+        const studentResult = await Result.findOne({ roll_no: roll_no.trim(), year: year.trim() });
+        if (studentResult) {
+            res.json({ success: true, data: studentResult });
+        } else {
+            res.json({ success: false, message: "Result nahi mila! Roll Number ya Saal check karein." });
+        }
+    } catch (err) {
+        res.json({ success: false, message: "Server me koi masla aa gaya hai." });
+    }
 });
 
 // Form Submissions
 app.post('/submit-admission', async (req, res) => {
-    const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
-    await Admission.create({ ...req.body, date: new Date().toLocaleString() });
-    res.send('<div style="text-align:center;margin-top:50px;font-family:sans-serif;"><h2>Dakhla Form Jama Ho Chuka Hai!</h2><a href="/">Home</a></div>');
+    try {
+        const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
+        await Admission.create({ ...req.body, date: new Date().toLocaleString() });
+        res.send('<div style="text-align:center;margin-top:50px;font-family:sans-serif;"><h2>Dakhla Form Jama Ho Chuka Hai!</h2><a href="/">Home</a></div>');
+    } catch {
+        res.status(500).send("Form jama nahi ho saka.");
+    }
 });
 
 app.post('/submit-contact', async (req, res) => {
-    await Message.create({ ...req.body, date: new Date().toLocaleString() });
-    res.send('<div style="text-align:center;margin-top:50px;font-family:sans-serif;"><h2>Aapka Paigham Bhej Diya Gaya Hai!</h2><a href="/">Home</a></div>');
+    try {
+        await Message.create({ ...req.body, date: new Date().toLocaleString() });
+        res.send('<div style="text-align:center;margin-top:50px;font-family:sans-serif;"><h2>Aapka Paigham Bhej Diya Gaya Hai!</h2><a href="/">Home</a></div>');
+    } catch {
+        res.status(500).send("Paigham nahi bheja ja saka.");
+    }
 });
 
-// Admin Login
+// Admin Login UI
 app.get('/admin', (req, res) => {
     if (req.session.isAdmin) return res.redirect('/admin/dashboard');
     res.send(`
@@ -87,12 +115,16 @@ app.get('/admin', (req, res) => {
 });
 
 app.post('/admin/login', async (req, res) => {
-    const creds = await Creds.findOne();
-    if (req.body.email === creds.email && req.body.password === creds.password) {
-        req.session.isAdmin = true;
-        res.redirect('/admin/dashboard');
-    } else {
-        res.send("<h3>Galat Email ya Password! <a href='/admin'>Dubara Koshish Karein</a></h3>");
+    try {
+        const creds = await Creds.findOne();
+        if (creds && req.body.email === creds.email && req.body.password === creds.password) {
+            req.session.isAdmin = true;
+            res.redirect('/admin/dashboard');
+        } else {
+            res.send("<h3>Galat Email ya Password! <a href='/admin'>Dubara Koshish Karein</a></h3>");
+        }
+    } catch {
+        res.send("Login me koi masla aaya.");
     }
 });
 
@@ -133,7 +165,7 @@ app.get('/admin/delete/:type/:id', isAuthenticated, async (req, res) => {
 
 // Dashboard UI
 app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
-    const Admission = mongoose.model('Admission');
+    const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
     const admissions = await Admission.find();
     const messages = await Message.find();
     const notices = await Notice.find();
@@ -150,9 +182,9 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
         <html lang="en">
         <head><title>Admin Dashboard</title><style>body{font-family:sans-serif;margin:20px;background:#f4f6f9;} th,td{padding:10px;border:1px solid #ddd;text-align:left;} table{width:100%;border-collapse:collapse;background:#fff;margin-top:10px;} .card{background:#fff;padding:20px;border-radius:6px;box-shadow:0 2px 5px rgba(0,0,0,0.05);margin-bottom:20px;} input,select,textarea{width:100%;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;}</style></head>
         <body>
-            <div style="display:flex;justify-content:between;align-items:center;background:#0b2240;color:white;padding:15px 30px;border-radius:6px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:#0b2240;color:white;padding:15px 30px;border-radius:6px;">
                 <h2>🏫 Shahzaib High School - MongoDB Dashboard</h2>
-                <a href="/admin/logout" style="background:red;color:white;padding:10px 15px;text-decoration:none;font-weight:bold;border-radius:4px;margin-left:auto;">Logout</a>
+                <a href="/admin/logout" style="background:red;color:white;padding:10px 15px;text-decoration:none;font-weight:bold;border-radius:4px;">Logout</a>
             </div>
             <div style="display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;">
                 <div class="card" style="flex:1;min-width:250px;background:#fff3cd;">
@@ -207,5 +239,12 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
     `);
 });
 
-app.get('/admin/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin')); });
-app.listen(PORT, () => console.log(`Server running with MongoDB`));
+// Admin Logout Route
+app.get('/admin/logout', (req, res) => { 
+    req.session.destroy(() => {
+        res.redirect('/admin'); 
+    });
+});
+
+// Start listening immediately so Render doesn't time out with a 502 error
+app.listen(PORT, () => console.log(`🚀 Server running perfectly on port ${PORT}`));
