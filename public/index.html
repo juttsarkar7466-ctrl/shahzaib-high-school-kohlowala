@@ -58,6 +58,8 @@
         .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
         .card h3 { margin-bottom: 15px; color: #0b2240; }
 
+        /* 🖼️ Gallery Styles (Hidden initially) */
+        #gallery { display: none; padding: 60px 8%; text-align: center; background:#f4f6f9; }
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
         .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 220px; }
         .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
@@ -113,7 +115,7 @@
             <ul>
                 <li><a href="#">Home</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="javascript:void(0)" onclick="showSchoolPhotos()">School Photos</a></li>
                 <li><a href="#results">Results</a></li>
                 <li><a href="#admission">Admission</a></li>
                 <li><a href="#contact">Contact</a></li>
@@ -128,7 +130,7 @@
         <p>Providing premium and high-standard modern education with elite global architecture standards and dynamic learning environment at Kohlowala.</p>
         <div class="btn-group">
             <a href="#admission" class="btn btn-primary">Apply Online Now</a>
-            <a href="#about" class="btn btn-secondary">Learn More</a>
+            <a href="javascript:void(0)" onclick="showSchoolPhotos()" class="btn btn-secondary">View Campus Photos</a>
         </div>
     </div>
 
@@ -152,8 +154,8 @@
         </div>
     </section>
 
-    <!-- 🖼️ Gallery Section -->
-    <section id="gallery" style="background:#f4f6f9;">
+    <!-- 🖼️ Gallery Section (Hidden by Default) -->
+    <section id="gallery">
         <h2>School Event Gallery</h2>
         <div class="gallery-grid" id="photoGalleryContainer">
             <div style="grid-column: 1/-1; color:gray; padding:30px;">Loading campus gallery collection...</div>
@@ -275,7 +277,7 @@
             document.getElementById('mainMarquee').innerText = "Welcome to Shahzaib High School Kohlowala!";
         });
 
-        // Load image gallery
+        // Load image gallery data but keep section hidden until action click
         fetch('/api/photos').then(res => res.json()).then(photos => {
             const container = document.getElementById('photoGalleryContainer');
             if(photos && photos.length > 0) {
@@ -295,6 +297,13 @@
         }).catch(() => {
             document.getElementById('photoGalleryContainer').innerHTML = '<div style="color:red;padding:20px;">Gallery loading error.</div>';
         });
+
+        // Function to make Gallery visible and smooth scroll to it
+        function showSchoolPhotos() {
+            const gallerySection = document.getElementById('gallery');
+            gallerySection.style.display = 'block'; // Make it visible
+            gallerySection.scrollIntoView({ behavior: 'smooth' }); // Scroll directly to it
+        }
 
         // Search Student Result
         function searchStudentResult() {
