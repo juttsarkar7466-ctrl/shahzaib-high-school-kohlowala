@@ -218,4 +218,5 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
 
 app.get('/admin/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin')); });
 
-app.listen(PORT, () => console.log(`🚀 Server running perfectly on port ${PORT}`));
+// 🛠️ CRITICAL FIX: Explicitly bind to '0.0.0.0' for Render Router
+app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running perfectly on port ${PORT}`));
