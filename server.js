@@ -55,7 +55,7 @@ function isAuthenticated(req, res, next) {
     res.redirect('/admin');
 }
 
-// 🏠 Main Route for User Home Page (index.html)
+// 🏠 Main Route for User Home Page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -85,7 +85,7 @@ app.get('/api/search-result', async (req, res) => {
     }
 });
 
-// Form Submissions (Fixed Return Links)
+// Form Submissions (With Working Return Links)
 app.post('/submit-admission', async (req, res) => {
     try {
         await Admission.create({ ...req.body, date: new Date().toLocaleString() });
@@ -277,7 +277,7 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
     `);
 });
 
-// 🚪 Admin Logout Route (Direct Redirects to Public Home Page)
+// 🚪 Admin Logout Route (Redirects to Public Home Page)
 app.get('/admin/logout', (req, res) => { 
     req.session.destroy(() => {
         res.redirect('/'); 
