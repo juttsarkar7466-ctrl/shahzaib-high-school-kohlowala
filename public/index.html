@@ -6,306 +6,197 @@
     <title>Shahzaib High School Kohlowala</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth; }
-        .notice-marquee { background: #b22222; color: white; padding: 8px; font-weight: bold; font-size: 14px; display: flex; align-items: center; z-index: 101; position: relative; }
-        
-        header { display: flex; justify-content: space-between; align-items: center; background-color: rgba(11, 34, 64, 0.95); color: white; padding: 20px 8%; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
+        .notice-marquee { background: red; color: white; padding: 8px; font-weight: bold; font-size: 14px; display: flex; align-items: center; }
+        header { display: flex; justify-content: space-between; align-items: center; background-color: #0b2240; color: white; padding: 20px 8%; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .logo { font-size: 22px; font-weight: bold; }
-        nav ul { display: flex; list-style: none; align-items: center; }
+        nav ul { display: flex; list-style: none; }
         nav ul li { margin-left: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s; }
         nav ul li a:hover { color: #ffcc00; cursor: pointer; }
         
-        /* Special Admin Button Style in Header */
-        .admin-nav-btn { background: #ffcc00; color: #0b2240 !important; padding: 6px 15px; border-radius: 4px; font-weight: bold !important; }
-        .admin-nav-btn:hover { background: white !important; color: #0b2240 !important; }
-
-        /* 🏰 Hero Section with European School Background */
-        .hero { 
-            position: relative;
-            height: 75vh; 
-            background: url('https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=1920') no-repeat center center/cover; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            color: white; 
-            text-align: center; 
-            padding: 0 20px;
-        }
-        .hero::before {
-            content: "";
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.55);
-            z-index: 1;
-        }
-        .hero h1, .hero p, .hero .btn-group { position: relative; z-index: 2; }
-        .hero h1 { font-size: 50px; margin-bottom: 15px; font-weight: 700; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); }
-        .hero p { font-size: 20px; margin-bottom: 25px; max-width: 700px; text-shadow: 1px 1px 5px rgba(0,0,0,0.7); }
+        .hero { background: linear-gradient(rgba(11, 34, 64, 0.8), rgba(11, 34, 64, 0.8)), url('/image_0.png') no-repeat center center/cover; height: 70vh; display: flex; justify-content: center; align-items: center; text-align: center; color: white; padding: 0 20px; }
+        .hero-content h1 { font-size: 46px; color: #ffcc00; margin-bottom: 25px; }
+        .btn { background-color: #ffcc00; color: #0b2240; padding: 14px 35px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block; margin: 5px; transition: 0.3s; cursor: pointer; }
+        .btn:hover { background-color: white; }
         
-        .btn { padding: 12px 28px; font-size: 16px; font-weight: bold; text-decoration: none; border-radius: 5px; transition: 0.3s; display: inline-block; margin: 10px; cursor: pointer; border: none; }
-        .btn-primary { background-color: #ffcc00; color: #0b2240; }
-        .btn-primary:hover { background-color: #e6b800; }
-        .btn-secondary { background-color: transparent; color: white; border: 2px solid white; }
-        .btn-secondary:hover { background-color: white; color: #0b2240; }
-
-        section { padding: 60px 8%; text-align: center; }
-        section h2 { font-size: 32px; margin-bottom: 30px; color: #0b2240; position: relative; padding-bottom: 10px; }
-        section h2::after { content: ''; width: 60px; height: 4px; background: #ffcc00; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); }
-
-        .about-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 20px; }
-        .card { background: #f8f9fa; padding: 30px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        .card h3 { margin-bottom: 15px; color: #0b2240; }
-
-        /* 🖼️ Gallery Styles (Hidden initially) */
-        #gallery { display: none; padding: 60px 8%; text-align: center; background:#f4f6f9; }
-        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .gallery-item { position: relative; overflow: hidden; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); height: 220px; }
-        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .gallery-item:hover img { transform: scale(1.1); }
-        .gallery-caption { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(11, 34, 64, 0.85); color: white; padding: 12px; font-size: 14px; text-align: center; }
-
-        .result-box { max-width: 550px; margin: 0 auto; background: #fff; padding: 35px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); text-align: left; border-top: 5px solid #0b2240; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 15px; outline: none; transition: 0.3s; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #0b2240; box-shadow: 0 0 5px rgba(11,34,64,0.2); }
-
-        /* 🏛️ Admission Section with Classic European Campus Background */
-        .admission-section { 
-            position: relative;
-            background: url('https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=1920') no-repeat center center/cover; 
-            color: white;
-            padding: 80px 8%;
-        }
-        .admission-section::before {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(11, 34, 64, 0.88); z-index: 1;
-        }
-        .admission-container { position: relative; z-index: 2; max-width: 650px; margin: 0 auto; background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 10px; color: #333; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        .admission-container h2 { color: #0b2240; margin-bottom: 20px; }
-        .admission-container h2::after { background: #b22222; }
-
-        .contact-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; text-align: left; }
-        .contact-info { background: #0b2240; color: white; padding: 40px; border-radius: 8px; }
-        .contact-info h3 { margin-bottom: 25px; color: #ffcc00; font-size: 24px; }
-        .contact-info p { margin-bottom: 15px; font-size: 16px; line-height: 1.6; }
-
-        footer { background: #07162c; color: white; text-align: center; padding: 25px; font-size: 14px; border-top: 3px solid #ffcc00; }
+        .section { padding: 60px 10%; text-align: center; }
+        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 35px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: left; border-top: 4px solid #0b2240; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .submit-btn { width: 100%; background-color: #0b2240; color: white; padding: 14px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .submit-btn:hover { background-color: #ffcc00; color: #0b2240; }
         
-        #resultCard { margin-top: 25px; padding: 20px; background: #e8f5e9; border-left: 5px solid #2e7d32; border-radius: 5px; display: none; }
-        #resultCard h4 { margin-bottom: 12px; color: #2e7d32; }
-        #resultCard p { margin-bottom: 6px; font-size: 15px; color: #333; }
-        #errorMsg { margin-top: 20px; color: #c62828; font-weight: bold; background: #ffebee; padding: 12px; border-radius: 5px; display: none; text-align: center; }
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 85%; max-width: 750px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 32px; cursor: pointer; }
+        
+        /* 🖼️ Inline Dynamic Gallery Styles (Hidden Initially) */
+        #dynamicGallerySection { display: none; padding: 60px 10%; background: #f8f9fa; text-align: center; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .gallery-item { border: 1px solid #eee; padding: 8px; border-radius: 6px; text-align: center; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .gallery-item img { width: 100%; height: 165px; object-fit: cover; border-radius: 4px; }
+        
+        /* Search Result design */
+        .search-card { background: #f4f7fa; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
+        .search-input { padding: 11px; width: 45%; margin-right: 2%; border: 1px solid #ccc; border-radius: 4px; }
+        .result-box { display: none; background: #fff; border: 2px dashed #0b2240; padding: 20px; border-radius: 6px; margin-top: 20px; }
+        
+        /* Contact and Map layout */
+        .footer-layout { background: #0b2240; color: white; padding: 50px 8%; display: flex; flex-wrap: wrap; gap: 30px; }
+        .footer-box { flex: 1; min-width: 300px; }
+        .info-list p { margin-bottom: 12px; font-size: 15px; line-height: 1.5; }
+        .info-list b { color: #ffcc00; }
     </style>
 </head>
 <body>
 
-    <!-- 📢 Announcement Notice Marquee Bar -->
     <div class="notice-marquee">
-        <span style="white-space:nowrap; margin-right:20px; background:#ffcc00; color:#0b2240; padding:3px 8px; border-radius:3px; font-size:12px;">ANNOUNCEMENT:</span>
-        <marquee id="mainMarquee" behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">Loading latest notices from high school panel...</marquee>
+        <span style="background:white; color:red; padding:2px 10px; margin-right:10px; border-radius:3px;">ELAN / NOTICE:</span>
+        <marquee id="marqueeText" scrollamount="5">Loading fresh school announcements...</marquee>
     </div>
 
-    <!-- 📋 Navigation Header -->
     <header>
         <div class="logo">🏫 Shahzaib High School</div>
         <nav>
             <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="javascript:void(0)" onclick="showSchoolPhotos()">School Photos</a></li>
-                <li><a href="#results">Results</a></li>
+                <li><a href="#home">Home</a></li>
+                <li><a onclick="showSchoolPhotos()">School Photos</a></li>
+                <li><a onclick="openModal('resultModal')">Result Sheet</a></li>
                 <li><a href="#admission">Admission</a></li>
-                <li><a href="#contact">Contact</a></li>
-                <li><a href="/admin" class="admin-nav-btn">Admin Portal</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="/admin" style="color:#ffcc00;">Admin</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- 🏰 Hero Banner Section -->
-    <div class="hero">
-        <h1>Welcome to Shahzaib High School</h1>
-        <p>Providing premium and high-standard modern education with elite global architecture standards and dynamic learning environment at Kohlowala.</p>
-        <div class="btn-group">
-            <a href="#admission" class="btn btn-primary">Apply Online Now</a>
-            <a href="javascript:void(0)" onclick="showSchoolPhotos()" class="btn btn-secondary">View Campus Photos</a>
-        </div>
-    </div>
-
-    <!-- 📘 About Section -->
-    <section id="about">
-        <h2>About Our Institution</h2>
-        <p style="max-width:800px; margin:0 auto 40px auto; color:#666; line-height:1.7;">Shahzaib High School Kohlowala is dedicated to bringing academic excellence, character development, and future leadership capabilities among students using modern methodologies.</p>
-        <div class="about-cards">
-            <div class="card">
-                <h3>High Class Faculty</h3>
-                <p>Highly skilled, professional, and well-educated teachers dedicated to nurturing young minds.</p>
-            </div>
-            <div class="card">
-                <h3>Science Labs</h3>
-                <p>Equipped with state-of-the-art experiment kits for comprehensive practical physics, chemistry, and biology setups.</p>
-            </div>
-            <div class="card">
-                <h3>Computer Lab</h3>
-                <p>High-speed internet workstations enabling complete access to computational logic and IT learning engines.</p>
-            </div>
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Shahzaib High School Kohlowala</h1>
+            <p>Welcome to Shahzaib High School, where excellence meets education. Admissions are open!</p>
+            <a onclick="showSchoolPhotos()" class="btn">View School Photos</a>
+            <a onclick="openModal('resultModal')" class="btn" style="background:white; color:#0b2240;">Check Result Sheet</a>
         </div>
     </section>
 
-    <!-- 🖼️ Gallery Section (Hidden by Default) -->
-    <section id="gallery">
-        <h2>School Event Gallery</h2>
-        <div class="gallery-grid" id="photoGalleryContainer">
-            <div style="grid-column: 1/-1; color:gray; padding:30px;">Loading campus gallery collection...</div>
-        </div>
+    <section id="dynamicGallerySection">
+        <h2 style="color: #0b2240;">🖼️ School Photo Gallery</h2>
+        <div id="galleryContainer" class="gallery-grid"></div>
     </section>
 
-    <!-- 📊 Exam Result Engine -->
-    <section id="results">
-        <h2>Check Student Board Results</h2>
-        <div class="result-box">
-            <div class="form-group">
-                <label for="rollNoInput">Enter Roll Number:</label>
-                <input type="text" id="rollNoInput" placeholder="e.g., 746612">
-            </div>
-            <div class="form-group">
-                <label for="yearInput">Select Session/Year:</label>
-                <select id="yearInput">
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                </select>
-            </div>
-            <button onclick="searchStudentResult()" class="btn btn-primary" style="width:100%; margin:10px 0 0 0;">Search Secure File</button>
-            
-            <div id="errorMsg"></div>
-            <div id="resultCard">
-                <h4>🎉 Student Performance Report</h4>
-                <p><b>Name:</b> <span id="resName"></span></p>
-                <p><b>Class Registration:</b> <span id="resClass"></span></p>
-                <p><b>Passing Session:</b> <span id="resYear"></span></p>
-                <p><b>Obtained Marks:</b> <span id="resMarks"></span></p>
-                <p><b>Final Status:</b> <span id="resStatus" style="font-weight:bold;"></span></p>
-            </div>
-        </div>
-    </section>
-
-    <!-- 🏛️ Admission Form Engine -->
-    <section id="admission" class="admission-section">
-        <div class="admission-container">
-            <h2>Online Admission Form</h2>
-            <form action="/submit-admission" method="POST" style="text-align:left;">
+    <section id="admission" class="section">
+        <h2>Online Admission Form</h2><br>
+        <div class="form-container">
+            <form action="/submit-admission" method="POST">
+                <div class="form-group"><label>Student Name:</label><input type="text" name="student_name" required></div>
+                <div class="form-group"><label>Father's Name:</label><input type="text" name="father_name" required></div>
                 <div class="form-group">
-                    <label>Candidate Full Name:</label>
-                    <input type="text" name="student_name" placeholder="Enter student full name" required>
-                </div>
-                <div class="form-group">
-                    <label>Father/Guardian Name:</label>
-                    <input type="text" name="father_name" placeholder="Father's legal name" required>
-                </div>
-                <div class="form-group">
-                    <label>Target Admission Class:</label>
+                    <label>Select Class:</label>
                     <select name="student_class" required>
-                        <option value="">Choose Class</option>
-                        <option value="Class 1">Class 1</option>
-                        <option value="Class 6">Class 6</option>
-                        <option value="Class 9">Class 9 (Metric)</option>
-                        <option value="Class 10">Class 10</option>
+                        <option value="">-- Choose Class --</option>
+                        <option value="Nursery">Nursery / Playgroup</option>
+                        <option value="Primary">Primary (Class 1-5)</option>
+                        <option value="Middle">Middle (Class 6-8)</option>
+                        <option value="Matric">Matric (Class 9-10)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>Active Contact Phone Number:</label>
-                    <input type="tel" name="phone" placeholder="e.g., 03001234567" required>
-                </div>
-                <div class="form-group">
-                    <label>Permanent Residential Address:</label>
-                    <textarea name="address" rows="3" placeholder="Enter full address detail" required></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width:100%; margin:0;">Submit Admission Form</button>
+                <div class="form-group"><label>WhatsApp Number:</label><input type="tel" name="phone" required></div>
+                <div class="form-group"><label>Address:</label><textarea name="address" rows="3" required></textarea></div>
+                <button type="submit" class="submit-btn">Submit Application</button>
             </form>
         </div>
     </section>
 
-    <!-- ✉️ Contact Section -->
-    <section id="contact">
-        <h2>Contact Management Desk</h2>
-        <div class="contact-container">
-            <div class="contact-info">
-                <h3>Campus Location</h3>
-                <p><b>Address:</b> Main Campus Building, Kohlowala District, Punjab, Pakistan.</p>
-                <p><b>Phone Helpdesk:</b> +92 346 6746600</p>
-                <p><b>Official Email:</b> info@shahzaibhighschool.edu.pk</p>
-                <p><b>Office Hours:</b> Mon - Sat (08:00 AM - 02:00 PM)</p>
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('resultModal')">×</span>
+            <h2>📊 Result Portal (2010 - 2026)</h2>
+            <div class="search-card">
+                <input type="text" id="rollNoInput" class="search-input" placeholder="Roll Number">
+                <select id="yearInput" class="search-input" style="width:35%;"></select>
+                <button class="submit-btn" style="width:auto; padding:10px 20px; margin-top:10px;" onclick="searchStudentResult()">Search Result</button>
             </div>
-            <div style="background:#f8f9fa; padding:40px; border-radius:8px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
-                <form action="/submit-contact" method="POST">
-                    <div class="form-group">
-                        <label>Your Name:</label>
-                        <input type="text" name="name" placeholder="Enter your full name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone Number:</label>
-                        <input type="tel" name="phone" placeholder="Contact number" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Message/Query Text:</label>
-                        <textarea name="msg" rows="4" placeholder="Type your questions here..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%; margin:0; background:#0b2240; color:white;">Send Message</button>
-                </form>
+            <div id="resultCard" class="result-box">
+                <h3 style="border-bottom:2px solid #0b2240; padding-bottom:5px;">Result Card</h3><br>
+                <p><b>Name:</b> <span id="resName"></span></p>
+                <p><b>Class:</b> <span id="resClass"></span></p>
+                <p><b>Year:</b> <span id="resYear"></span></p>
+                <p><b>Marks:</b> <span id="resMarks"></span></p>
+                <p><b>Status:</b> <span id="resStatus"></span></p>
             </div>
+            <p id="errorMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></p>
+        </div>
+    </div>
+
+    <section id="contact" class="footer-layout">
+        <div class="footer-box">
+            <h3>✉️ Contact Us (Sawalat Bhein)</h3><br>
+            <form action="/submit-contact" method="POST" style="color: black;">
+                <input type="text" name="name" placeholder="Aapka Naam" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none;"><br>
+                <input type="tel" name="phone" placeholder="Mobile Number" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none;"><br>
+                <textarea name="msg" placeholder="Apna Sawal Ya Paigham Likhein..." rows="3" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none区域"></textarea>
+                <button type="submit" style="background:#ffcc00; color:#0b2240; font-weight:bold; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">Send Message</button>
+            </form>
+        </div>
+        
+        <div class="footer-box info-list">
+            <h3>📍 School Campus Information</h3><br>
+            <p><b>Campus Address:</b> Kohlowala, Gujranwala, Postal Code: 52130</p>
+            <p><b>Phone Helpdesk:</b> 03054242644 &nbsp;|&nbsp; 03446921641</p>
+            <p><b>Official Email:</b> juttsarkar7466@gmail.com</p>
+            <p><b>Office Hours:</b> Mon - Sat (08:00 AM - 02:00 PM)</p>
+            <p style="margin-top:15px; font-size:14px; color:#ffcc00;">📞 Principal Ishfaq Gill: 0305-4242644</p>
+        </div>
+
+        <div class="footer-box">
+            <h3>🗺️ School Location Map</h3><br>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13544.757829777174!2d74.14812835!3d32.06282825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f2a3ff4c8525b%3A0x67ef2cb250dbf6c2!2sKohlowala%2C%20Gujranwala%2C%20Punjab!5e0!3m2!1sen!2s!4v1710000000000!5m2!1sen!2s" width="100%" height="180" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Shahzaib High School Kohlowala. All Rights Reserved.</p>
+    <footer style="background:#051427; color:white; text-align:center; padding:15px; font-size:14px;">
+        <p>© 2026 Shahzaib High School Kohlowala. Developed Securely.</p>
     </footer>
 
     <script>
-        // Fetch announcements
-        fetch('/api/notices').then(res => res.json()).then(data => {
-            if(data && data.length > 0) {
-                const textList = data.map(n => `★ ${n.text} (${n.date})`).join('    ');
-                document.getElementById('mainMarquee').innerText = textList;
-            } else {
-                document.getElementById('mainMarquee').innerText = "Welcome to Shahzaib High School Kohlowala!";
-            }
-        }).catch(() => {
-            document.getElementById('mainMarquee').innerText = "Welcome to Shahzaib High School Kohlowala!";
-        });
-
-        // Load image gallery data but keep section hidden until action click
-        fetch('/api/photos').then(res => res.json()).then(photos => {
-            const container = document.getElementById('photoGalleryContainer');
-            if(photos && photos.length > 0) {
-                container.innerHTML = photos.map(p => `
-                    <div class="gallery-item">
-                        <img src="${p.url}" alt="School Event Image">
-                        <div class="gallery-caption">${p.caption}</div>
-                    </div>
-                `).join('');
-            } else {
-                container.innerHTML = `
-                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=500"><div class="gallery-caption">Main University Archway</div></div>
-                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=500"><div class="gallery-caption">Central Library Hall</div></div>
-                    <div class="gallery-item"><img src="https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=500"><div class="gallery-caption">Campus Front Lawn</div></div>
-                `;
-            }
-        }).catch(() => {
-            document.getElementById('photoGalleryContainer').innerHTML = '<div style="color:red;padding:20px;">Gallery loading error.</div>';
-        });
-
-        // Function to make Gallery visible and smooth scroll to it
-        function showSchoolPhotos() {
-            const gallerySection = document.getElementById('gallery');
-            gallerySection.style.display = 'block'; // Make it visible
-            gallerySection.scrollIntoView({ behavior: 'smooth' }); // Scroll directly to it
+        // Populate Years
+        const yearSelect = document.getElementById('yearInput');
+        for (let y = 2026; y >= 2010; y--) {
+            let opt = document.createElement('option'); opt.value = y; opt.innerHTML = y; yearSelect.appendChild(opt);
         }
 
-        // Search Student Result
+        // Fetch Live Notices for Marquee Scrolling Text
+        fetch('/api/notices').then(res => res.json()).then(data => {
+            if(data.length) {
+                document.getElementById('marqueeText').innerText = data.map(n => `📢 ${n.text} (${n.date})`).join('  |  ');
+            } else {
+                document.getElementById('marqueeText').innerText = "Shahzaib High School Kohlowala mein khush aamdeed! Naye dakhlay jari hain.";
+            }
+        });
+
+        // Dynamic Image Loader Engine (Triggered ONLY on explicit action click)
+        function showSchoolPhotos() {
+            const gallerySection = document.getElementById('dynamicGallerySection');
+            gallerySection.style.display = "block"; // Make the container section visible
+            
+            // Fetch images live from database endpoint
+            fetch('/api/photos').then(res => res.json()).then(data => {
+                document.getElementById('galleryContainer').innerHTML = data.length ? data.map(p => `
+                    <div class="gallery-item">
+                        <img src="${p.url}">
+                        <p style="margin-top:5px;"><b>${p.caption}</b></p>
+                    </div>
+                `).join('') : '<p style="grid-column: 1/-1; color:gray; padding:20px;">No photos uploaded yet.</p>';
+                
+                // Smoothly scroll user down to the section view area
+                gallerySection.scrollIntoView({ behavior: 'smooth' });
+            });
+        }
+
+        function openModal(id) { document.getElementById(id).style.display = "flex"; }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
         function searchStudentResult() {
             const rollNo = document.getElementById('rollNoInput').value;
             const year = document.getElementById('yearInput').value;
