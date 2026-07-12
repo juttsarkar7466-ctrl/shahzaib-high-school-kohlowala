@@ -28,6 +28,7 @@ async function initAdmin() {
     const count = await Creds.countDocuments();
     if (count === 0) {
         await Creds.create({ email: "juttsarkar7466@gmail.com", password: "JuttSSMarket@2026!" });
+        console.log("💼 Default Admin Account Created!");
     }
 }
 initAdmin();
@@ -48,7 +49,7 @@ function isAuthenticated(req, res, next) {
     res.redirect('/admin');
 }
 
-// Public APIs (Fetches directly from MongoDB)
+// Public APIs
 app.get('/api/photos', async (req, res) => res.json(await Photo.find() || []));
 app.get('/api/notices', async (req, res) => res.json(await Notice.find() || []));
 
@@ -166,7 +167,7 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
                 <div class="card" style="flex:1;min-width:300px;">
                     <h3>📢 Notice Board (New Announcement)</h3>
                     <form action="/admin/add-notice" method="POST">
-                        <input type="text" name="notice_text" placeholder="e.g., Garmiyon ki chuttiyan 15 June se..." required>
+                        <input type="text" name="notice_text" placeholder="Announcement text..." required>
                         <button type="submit" style="background:#007bff;color:white;padding:10px;border:none;cursor:pointer;">Publish Announcement</button>
                     </form>
                     <h4>Active Notices:</h4><ul>${noticeRows || '<li>No active elanaat.</li>'}</ul>
@@ -210,4 +211,4 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
 
 app.get('/admin/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin')); });
 
-app.listen(PORT, () => console.log(`🚀 Server perfectly running with MongoDB on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running perfectly on port ${PORT}`));
