@@ -6,7 +6,7 @@ const multer = require('multer');
 const mongoose = require('mongoose');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000; // Render standard port configuration
 const upload = multer({ dest: 'uploads/' });
 
 // 🔗 MongoDB Connection Link
@@ -25,10 +25,14 @@ const Creds = mongoose.model('Cred', { email: String, password: String });
 
 // Default Admin Credentials Setup
 async function initAdmin() {
-    const count = await Creds.countDocuments();
-    if (count === 0) {
-        await Creds.create({ email: "juttsarkar7466@gmail.com", password: "JuttSSMarket@2026!" });
-        console.log("💼 Default Admin Account Created!");
+    try {
+        const count = await Creds.countDocuments();
+        if (count === 0) {
+            await Creds.create({ email: "juttsarkar7466@gmail.com", password: "JuttSSMarket@2026!" });
+            console.log("💼 Default Admin Account Created!");
+        }
+    } catch (e) {
+        console.error("Admin init error:", e);
     }
 }
 initAdmin();
@@ -36,20 +40,20 @@ initAdmin();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// Static Files & Root Path Routing Setup (Fixes 502 Error on Render)
+// Production Session Management (Bypass Proxy Issues)
+app.use(session({
+    secret: 'JuttSarkarSecretKey2026!@#',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 30 * 60 * 1000 }
+}));
+
+// Static Files & Root Path Routing Setup
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
-
-// Production Session Management
-app.use(session({
-    secret: 'JuttSarkarSecretKey2026!@#',
-    resave: true,
-    saveUninitialized: true,
-    cookie: { secure: false, maxAge: 30 * 60 * 1000 } // 30 mins
-}));
 
 function isAuthenticated(req, res, next) {
     if (req.session && req.session.isAdmin) return next();
@@ -218,5 +222,5 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
 
 app.get('/admin/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin')); });
 
-// 🛠️ CRITICAL FIX: Explicitly bind to '0.0.0.0' for Render Router
+// Open port binding for cloud routers
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running perfectly on port ${PORT}`));
