@@ -27,23 +27,19 @@
         .submit-btn { width: 100%; background-color: #0b2240; color: white; padding: 14px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .submit-btn:hover { background-color: #ffcc00; color: #0b2240; }
         
-        /* Modals */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 85%; max-width: 750px; max-height: 85vh; overflow-y: auto; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 32px; cursor: pointer; }
         
-        /* 🖼️ Gallery Styles (Hidden Initially) */
         #dynamicGallerySection { display: none; padding: 60px 10%; background: #f8f9fa; text-align: center; }
         .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
         .gallery-item { border: 1px solid #eee; padding: 8px; border-radius: 6px; text-align: center; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .gallery-item img { width: 100%; height: 165px; object-fit: cover; border-radius: 4px; }
         
-        /* Search Result design */
         .search-card { background: #f4f7fa; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
         .search-input { padding: 11px; width: 45%; margin-right: 2%; border: 1px solid #ccc; border-radius: 4px; }
         .result-box { display: none; background: #fff; border: 2px dashed #0b2240; padding: 20px; border-radius: 6px; margin-top: 20px; }
         
-        /* Contact and Map layout */
         .footer-layout { background: #0b2240; color: white; padding: 50px 8%; display: flex; flex-wrap: wrap; gap: 30px; }
         .footer-box { flex: 1; min-width: 300px; }
         .info-list p { margin-bottom: 12px; font-size: 15px; line-height: 1.5; }
@@ -151,7 +147,7 @@
 
         <div class="footer-box">
             <h3>🗺️ School Location Map</h3><br>
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3378.567087611394!2d74.1728442757885!3d32.089954273957245!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391ecc349cd74991%3A0xc3f8371c6c5ea3e9!2sShahzaib%20High%20School%20Kohlowala!5e0!3m2!1sen!2s!4v1716912345678!5m2!1sen!2s" width="100%" height="180" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3378.4359904944445!2d74.1728442757912!3d32.08994967395989!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f29c5a1ad32b1%3A0x633e7cd28d1ce32!2sShahzaib%20High%20School%20Kohlowala!5e0!3m2!1sen!2spk!4v1710000000000!5m2!1sen!2spk" width="100%" height="180" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>
         </div>
     </section>
 
@@ -160,13 +156,11 @@
     </footer>
 
     <script>
-        // Populate Years
         const yearSelect = document.getElementById('yearInput');
         for (let y = 2026; y >= 2010; y--) {
             let opt = document.createElement('option'); opt.value = y; opt.innerHTML = y; yearSelect.appendChild(opt);
         }
 
-        // Fetch Live Notices
         fetch('/api/notices').then(res => res.json()).then(data => {
             if(data.length) {
                 document.getElementById('marqueeText').innerText = data.map(n => `📢 ${n.text} (${n.date})`).join('  |  ');
