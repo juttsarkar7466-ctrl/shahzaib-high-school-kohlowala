@@ -35,13 +35,20 @@ initAdmin();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+
+// Static Files & Root Path Routing Setup (Fixes 502 Error on Render)
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Production Session Management
 app.use(session({
     secret: 'JuttSarkarSecretKey2026!@#',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { maxAge: 30 * 60 * 1000 }
+    resave: true,
+    saveUninitialized: true,
+    cookie: { secure: false, maxAge: 30 * 60 * 1000 } // 30 mins
 }));
 
 function isAuthenticated(req, res, next) {
@@ -73,7 +80,7 @@ app.post('/submit-contact', async (req, res) => {
     res.send('<div style="text-align:center;margin-top:50px;font-family:sans-serif;"><h2>Aapka Paigham Bhej Diya Gaya Hai!</h2><a href="/">Home</a></div>');
 });
 
-// Admin Login
+// Admin Login Panel View
 app.get('/admin', (req, res) => {
     if (req.session.isAdmin) return res.redirect('/admin/dashboard');
     res.send(`
@@ -98,7 +105,7 @@ app.post('/admin/login', async (req, res) => {
     }
 });
 
-// Admin Form Actions
+// Admin Control Panel Actions
 app.post('/admin/upload-photo', isAuthenticated, async (req, res) => {
     await Photo.create({ url: req.body.photo_url, caption: req.body.caption });
     res.redirect('/admin/dashboard');
@@ -120,7 +127,7 @@ app.post('/admin/change-password', isAuthenticated, async (req, res) => {
     res.send("<h3>🔐 Password Kamyabi Se Badal Gaya!</h3><a href='/admin/dashboard'>Wapas Dashboard</a>");
 });
 
-// Direct MongoDB Delete Engine
+// MongoDB Delete Engine
 app.get('/admin/delete/:type/:id', isAuthenticated, async (req, res) => {
     const { type, id } = req.params;
     if (type === 'notices') await Notice.findByIdAndDelete(id);
@@ -133,7 +140,7 @@ app.get('/admin/delete/:type/:id', isAuthenticated, async (req, res) => {
     res.redirect('/admin/dashboard');
 });
 
-// Dashboard UI
+// Admin Dashboard Panel Structure
 app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
     const Admission = mongoose.model('Admission');
     const admissions = await Admission.find();
