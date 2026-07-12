@@ -10,10 +10,14 @@
         
         header { display: flex; justify-content: space-between; align-items: center; background-color: rgba(11, 34, 64, 0.95); color: white; padding: 20px 8%; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); backdrop-filter: blur(5px); }
         .logo { font-size: 22px; font-weight: bold; }
-        nav ul { display: flex; list-style: none; }
+        nav ul { display: flex; list-style: none; align-items: center; }
         nav ul li { margin-left: 20px; }
         nav ul li a { color: white; text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s; }
         nav ul li a:hover { color: #ffcc00; cursor: pointer; }
+        
+        /* Special Admin Button Style in Header */
+        .admin-nav-btn { background: #ffcc00; color: #0b2240 !important; padding: 6px 15px; border-radius: 4px; font-weight: bold !important; }
+        .admin-nav-btn:hover { background: white !important; color: #0b2240 !important; }
 
         /* 🏰 Hero Section with European School Background */
         .hero { 
@@ -96,11 +100,13 @@
 </head>
 <body>
 
+    <!-- 📢 Announcement Notice Marquee Bar -->
     <div class="notice-marquee">
         <span style="white-space:nowrap; margin-right:20px; background:#ffcc00; color:#0b2240; padding:3px 8px; border-radius:3px; font-size:12px;">ANNOUNCEMENT:</span>
         <marquee id="mainMarquee" behavior="scroll" direction="left" onmouseover="this.stop();" onmouseout="this.start();">Loading latest notices from high school panel...</marquee>
     </div>
 
+    <!-- 📋 Navigation Header -->
     <header>
         <div class="logo">🏫 Shahzaib High School</div>
         <nav>
@@ -111,10 +117,12 @@
                 <li><a href="#results">Results</a></li>
                 <li><a href="#admission">Admission</a></li>
                 <li><a href="#contact">Contact</a></li>
+                <li><a href="/admin" class="admin-nav-btn">Admin Portal</a></li>
             </ul>
         </nav>
     </header>
 
+    <!-- 🏰 Hero Banner Section -->
     <div class="hero">
         <h1>Welcome to Shahzaib High School</h1>
         <p>Providing premium and high-standard modern education with elite global architecture standards and dynamic learning environment at Kohlowala.</p>
@@ -124,6 +132,7 @@
         </div>
     </div>
 
+    <!-- 📘 About Section -->
     <section id="about">
         <h2>About Our Institution</h2>
         <p style="max-width:800px; margin:0 auto 40px auto; color:#666; line-height:1.7;">Shahzaib High School Kohlowala is dedicated to bringing academic excellence, character development, and future leadership capabilities among students using modern methodologies.</p>
@@ -143,6 +152,7 @@
         </div>
     </section>
 
+    <!-- 🖼️ Gallery Section -->
     <section id="gallery" style="background:#f4f6f9;">
         <h2>School Event Gallery</h2>
         <div class="gallery-grid" id="photoGalleryContainer">
@@ -150,6 +160,7 @@
         </div>
     </section>
 
+    <!-- 📊 Exam Result Engine -->
     <section id="results">
         <h2>Check Student Board Results</h2>
         <div class="result-box">
@@ -179,6 +190,7 @@
         </div>
     </section>
 
+    <!-- 🏛️ Admission Form Engine -->
     <section id="admission" class="admission-section">
         <div class="admission-container">
             <h2>Online Admission Form</h2>
@@ -214,6 +226,7 @@
         </div>
     </section>
 
+    <!-- ✉️ Contact Section -->
     <section id="contact">
         <h2>Contact Management Desk</h2>
         <div class="contact-container">
@@ -244,9 +257,9 @@
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <p>&copy; 2026 Shahzaib High School Kohlowala. All Rights Reserved.</p>
-        <p style="font-size:11px; margin-top:5px; color:#aaa;"><a href="/admin" style="color:#ffcc00; text-decoration:none;">Authorized Admin Portal Login</a></p>
     </footer>
 
     <script>
