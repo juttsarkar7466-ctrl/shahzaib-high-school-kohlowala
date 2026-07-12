@@ -55,9 +55,15 @@ function isAuthenticated(req, res, next) {
     res.redirect('/admin');
 }
 
-// Public APIs (Fetches directly from MongoDB)
+// 🖼️ Public API to Fetch Photos (For index.html)
 app.get('/api/photos', async (req, res) => {
-    try { res.json(await Photo.find()); } catch { res.json([]); }
+    try { 
+        const allPhotos = await Photo.find(); 
+        res.json(allPhotos || []); 
+    } catch (err) { 
+        console.error("Fetch Photos API Error:", err);
+        res.json([]); 
+    }
 });
 
 app.get('/api/notices', async (req, res) => {
@@ -128,15 +134,19 @@ app.post('/admin/login', async (req, res) => {
     }
 });
 
-// Admin Form Actions (Safely handles slow DB response)
+// 🖼️ Photo Upload Handler (Fixed)
 app.post('/admin/upload-photo', isAuthenticated, async (req, res) => {
     try {
-        if(req.body.photo_url && req.body.caption) {
-            await Photo.create({ url: req.body.photo_url.trim(), caption: req.body.caption.trim() });
+        const { photo_url, caption } = req.body;
+        if(photo_url && photo_url.trim() !== "") {
+            await Photo.create({ 
+                url: photo_url.trim(), 
+                caption: caption ? caption.trim() : "School Event" 
+            });
         }
         res.redirect('/admin/dashboard');
     } catch (err) {
-        console.error("Photo Upload Error:", err);
+        console.error("Photo Upload Backend Error:", err);
         res.redirect('/admin/dashboard');
     }
 });
@@ -183,20 +193,21 @@ app.get('/admin/delete/:type/:id', isAuthenticated, async (req, res) => {
     }
 });
 
-// Dashboard UI (Enhanced & Crash Proof)
+// Dashboard UI
 app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
     let admissions = [], messages = [], notices = [], photos = [];
     
-    // Alag-alag fetch karenge taake agar koi ek fail ho to baki chalti rahein
-    try { admissions = await Admission.find(); } catch (e) { console.log("Admissions load error"); }
-    try { messages = await Message.find(); } catch (e) { console.log("Messages load error"); }
-    try { notices = await Notice.find(); } catch (e) { console.log("Notices load error"); }
-    try { photos = await Photo.find(); } catch (e) { console.log("Photos load error"); }
+    try { admissions = await Admission.find(); } catch (e) { console.log("Admissions error"); }
+    try { messages = await Message.find(); } catch (e) { console.log("Messages error"); }
+    try { notices = await Notice.find(); } catch (e) { console.log("Notices error"); }
+    try { photos = await Photo.find(); } catch (e) { console.log("Photos error"); }
 
     const admissionRows = admissions.map(u => `<tr><td>${u.student_name}</td><td>${u.father_name}</td><td>${u.student_class}</td><td>${u.phone}</td><td><a href="/admin/delete/admissions/${u._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
     const messageRows = messages.map(m => `<tr><td>${m.name}</td><td>${m.phone}</td><td>${m.msg}</td><td>${m.date}</td><td><a href="/admin/delete/messages/${m._id}" style="color:red;font-weight:bold;">Delete</a></td></tr>`).join('');
     const noticeRows = notices.map(n => `<li>${n.text} (${n.date}) - <a href="/admin/delete/notices/${n._id}" style="color:red;">Khatam Karen</a></li>`).join('');
-    const photoRows = photos.map(p => `<li>${p.caption} - <a href="/admin/delete/photos/${p._id}" style="color:red;">Delete Photo</a></li>`).join('');
+    
+    // UI par photo link aur caption sahi dikhane ke liye update kiya
+    const photoRows = photos.map(p => `<li><b>${p.caption}</b> (<a href="${p.url}" target="_blank">View Link</a>) - <a href="/admin/delete/photos/${p._id}" style="color:red;">Delete Photo</a></li>`).join('');
 
     let yearOptions = ''; for(let y=2026; y>=2010; y--) yearOptions += `<option value="${y}">${y}</option>`;
 
@@ -229,9 +240,9 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
                 <div class="card" style="flex:1;min-width:300px;">
                     <h3>🖼️ Manage School Photos</h3>
                     <form action="/admin/upload-photo" method="POST">
-                        <input type="text" name="photo_url" placeholder="Paste Image Link" required>
+                        <input type="text" name="photo_url" placeholder="Paste Direct Image URL (https://...)" required>
                         <input type="text" name="caption" placeholder="Photo Description" required>
-                        <button type="submit" style="background:green;color:white;padding:10px;border:none;cursor:pointer;">Add Photo</button>
+                        <button type="submit" style="background:green;color:white;padding:10px;border:none;cursor:pointer;width:100%;">Add Photo</button>
                     </form>
                     <h4>Current Photos:</h4><ul>${photoRows || '<li>No photos uploaded.</li>'}</ul>
                 </div>
