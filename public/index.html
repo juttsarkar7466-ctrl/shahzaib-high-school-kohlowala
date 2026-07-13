@@ -7,13 +7,14 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth; }
         
-        /* 🔴 NEW BACKGROUND DESIGN: Pure background par ek elegant light educational texture overlay lagaya hai */
+        /* 🏫 NEW SCHOOL BACKGROUND: Clean Notebook Grid Style with a soft blue-ish tone */
         body { 
-            background-color: #f4f7fb;
-            background-image: radial-gradient(#0b2240 0.5px, transparent 0.5px), radial-gradient(#0b2240 0.5px, #f4f7fb 0.5px);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            opacity: 0.98;
+            background-color: #f1f5f9;
+            background-image: 
+                linear-gradient(#e2e8f0 1.5px, transparent 1.5px), 
+                linear-gradient(90deg, #e2e8f0 1.5px, transparent 1.5px);
+            background-size: 30px 30px;
+            background-position: center;
         }
 
         .notice-marquee { background: red; color: white; padding: 8px; font-weight: bold; font-size: 14px; display: flex; align-items: center; }
@@ -24,7 +25,6 @@
         nav ul li a { color: white; text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s; }
         nav ul li a:hover { color: #ffcc00; cursor: pointer; }
         
-        /* Premium Hero Section with Dark Professional overlay */
         .hero { background: linear-gradient(rgba(11, 34, 64, 0.85), rgba(11, 34, 64, 0.85)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1200') no-repeat center center/cover; height: 70vh; display: flex; justify-content: center; align-items: center; text-align: center; color: white; padding: 0 20px; }
         .hero-content h1 { font-size: 46px; color: #ffcc00; margin-bottom: 25px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
         .btn { background-color: #ffcc00; color: #0b2240; padding: 14px 35px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block; margin: 5px; transition: 0.3s; cursor: pointer; }
@@ -38,7 +38,6 @@
         .submit-btn { width: 100%; background-color: #0b2240; color: white; padding: 14px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
         .submit-btn:hover { background-color: #ffcc00; color: #0b2240; }
         
-        /* Modals Layout */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 8px; width: 85%; max-width: 750px; max-height: 85vh; overflow-y: auto; position: relative; }
         .close-btn { position: absolute; top: 10px; right: 20px; font-size: 32px; cursor: pointer; }
@@ -46,7 +45,6 @@
         .gallery-item { border: 1px solid #eee; padding: 8px; border-radius: 6px; text-align: center; background: #fff; }
         .gallery-item img { width: 100%; height: 165px; object-fit: cover; border-radius: 4px; }
         
-        /* Result portal styling */
         .search-card { background: #f4f7fa; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
         .search-input { padding: 11px; width: 45%; margin-right: 2%; border: 1px solid #ccc; border-radius: 4px; }
         .result-box { display: none; background: #fff; border: 2px dashed #0b2240; padding: 20px; border-radius: 6px; margin-top: 20px; }
@@ -146,7 +144,8 @@
         
         <div class="footer-box">
             <h3>📍 School Location Map</h3><br>
-            <iframe src="https://www.google.com/maps/place/%D8%B4%D8%A7%DB%81%D8%B2%DB%8C%D8%A8+%DB%81%D8%A7%D8%A6%DB%8C+%D8%B3%DA%A9%D9%88%D9%84%E2%80%AD/@32.0921268,74.1748638,959m/data=!3m1!1e3!4m15!1m8!3m7!1s0x391f2983d520eb29:0x6fb33af85e7a368!2sGujranwala,+Pakistan!3b1!8m2!3d32.1475636!4d74.1914124!16zL20vMDIzbHpq!3m5!1s0x391f2b354b379213:0x1b3b319005b12ffc!8m2!3d32.0899497!4d74.1750329!16s%2Fg%2F11fj3pp9ln?hl=da&entry=ttu&g_ep=EgoyMDI2MDcwOC4wIKXMDSoASAFQAw%3D%3D" width="100%" height="200" style="border:0; border-radius:6px; background: #eee;" allowfullscreen="" loading="lazy"></iframe>
+            <!-- 📍 FIXED ACCURATE MAP: Pointed exactly to 32.0899497,74.1750329 (Kohlo Wala) as per Plus Code data -->
+            <iframe src="https://maps.google.com/maps?q=32.0899497,74.1750329&t=&z=15&ie=UTF8&iwloc=&output=embed" width="100%" height="220" style="border:0; border-radius:6px; background: #eee;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             <p style="margin-top:10px; font-size:14px; color:#ffcc00;">📞 Principal Ishfaq Gill: 0305-4242644</p>
         </div>
     </section>
