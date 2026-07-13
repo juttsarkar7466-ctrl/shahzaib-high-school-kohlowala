@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shahzaib High School Kohlowala</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; scroll-behavior: smooth; }
+        .notice-marquee { background: red; color: white; padding: 8px; font-weight: bold; font-size: 14px; display: flex; align-items: center; }
+        header { display: flex; justify-content: space-between; align-items: center; background-color: #0b2240; color: white; padding: 20px 8%; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .logo { font-size: 22px; font-weight: bold; }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 20px; }
+        nav ul li a { color: white; text-decoration: none; font-size: 16px; font-weight: 500; transition: 0.3s; }
+        nav ul li a:hover { color: #ffcc00; cursor: pointer; }
+        
+        .hero { background: linear-gradient(rgba(11, 34, 64, 0.8), rgba(11, 34, 64, 0.8)), url('/image_0.png') no-repeat center center/cover; height: 70vh; display: flex; justify-content: center; align-items: center; text-align: center; color: white; padding: 0 20px; }
+        .hero-content h1 { font-size: 46px; color: #ffcc00; margin-bottom: 25px; }
+        .btn { background-color: #ffcc00; color: #0b2240; padding: 14px 35px; text-decoration: none; font-weight: bold; border-radius: 5px; display: inline-block; margin: 5px; transition: 0.3s; cursor: pointer; }
+        .btn:hover { background-color: white; }
+        
+        .section { padding: 60px 10%; text-align: center; }
+        .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 35px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: left; border-top: 4px solid #0b2240; }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; outline: none; }
+        .submit-btn { width: 100%; background-color: #0b2240; color: white; padding: 14px; border: none; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .submit-btn:hover { background-color: #ffcc00; color: #0b2240; }
+        
+        /* Modals */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 85%; max-width: 750px; max-height: 85vh; overflow-y: auto; position: relative; }
+        .close-btn { position: absolute; top: 10px; right: 20px; font-size: 32px; cursor: pointer; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .gallery-item { border: 1px solid #eee; padding: 8px; border-radius: 6px; text-align: center; }
+        .gallery-item img { width: 100%; height: 165px; object-fit: cover; border-radius: 4px; }
+        
+        /* Search Result design */
+        .search-card { background: #f4f7fa; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
+        .search-input { padding: 11px; width: 45%; margin-right: 2%; border: 1px solid #ccc; border-radius: 4px; }
+        .result-box { display: none; background: #fff; border: 2px dashed #0b2240; padding: 20px; border-radius: 6px; margin-top: 20px; }
+        
+        /* Contact and Map layout */
+        .footer-layout { background: #0b2240; color: white; padding: 50px 8%; display: flex; flex-wrap: wrap; gap: 30px; }
+        .footer-box { flex: 1; min-width: 300px; }
+    </style>
+</head>
+<body>
+
+    <div class="notice-marquee">
+        <span style="background:white; color:red; padding:2px 10px; margin-right:10px; border-radius:3px;">ELAN / NOTICE:</span>
+        <marquee id="marqueeText" scrollamount="5">Loading fresh school announcements...</marquee>
+    </div>
+
+    <header>
+        <div class="logo">🏫 Shahzaib High School</div>
+        <nav>
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a onclick="openModal('photoModal')">School Photos</a></li>
+                <li><a onclick="openModal('resultModal')">Result Sheet</a></li>
+                <li><a href="#admission">Admission</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="/admin" style="color:#ffcc00;">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Shahzaib High School Kohlowala</h1>
+            <p>Welcome to Shahzaib High School, where excellence meets education. Admissions are open!</p>
+            <a onclick="openModal('photoModal')" class="btn">View School Photos</a>
+            <a onclick="openModal('resultModal')" class="btn" style="background:white; color:#0b2240;">Check Result Sheet</a>
+        </div>
+    </section>
+
+    <section id="admission" class="section">
+        <h2>Online Admission Form</h2><br>
+        <div class="form-container">
+            <form action="/submit-admission" method="POST">
+                <div class="form-group"><label>Student Name:</label><input type="text" name="student_name" required></div>
+                <div class="form-group"><label>Father's Name:</label><input type="text" name="father_name" required></div>
+                <div class="form-group">
+                    <label>Select Class:</label>
+                    <select name="student_class" required>
+                        <option value="">-- Choose Class --</option>
+                        <option value="Nursery">Nursery / Playgroup</option>
+                        <option value="Primary">Primary (Class 1-5)</option>
+                        <option value="Middle">Middle (Class 6-8)</option>
+                        <option value="Matric">Matric (Class 9-10)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>WhatsApp Number:</label><input type="tel" name="phone" required></div>
+                <div class="form-group"><label>Address:</label><textarea name="address" rows="3" required></textarea></div>
+                <button type="submit" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </section>
+
+    <div id="photoModal" class="modal">
+        <div class="modal-content"><span class="close-btn" onclick="closeModal('photoModal')">×</span><h2>🖼️ Photo Gallery</h2><div id="galleryContainer" class="gallery-grid"></div></div>
+    </div>
+
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('resultModal')">×</span>
+            <h2>📊 Result Portal (2010 - 2026)</h2>
+            <div class="search-card">
+                <input type="text" id="rollNoInput" class="search-input" placeholder="Roll Number">
+                <select id="yearInput" class="search-input" style="width:35%;"></select>
+                <button class="submit-btn" style="width:auto; padding:10px 20px; margin-top:10px;" onclick="searchStudentResult()">Search Result</button>
+            </div>
+            <div id="resultCard" class="result-box">
+                <h3 style="border-bottom:2px solid #0b2240; padding-bottom:5px;">Result Card</h3><br>
+                <p><b>Name:</b> <span id="resName"></span></p>
+                <p><b>Class:</b> <span id="resClass"></span></p>
+                <p><b>Year:</b> <span id="resYear"></span></p>
+                <p><b>Marks:</b> <span id="resMarks"></span></p>
+                <p><b>Status:</b> <span id="resStatus"></span></p>
+            </div>
+            <p id="errorMsg" style="color:red; font-weight:bold; margin-top:10px; display:none;"></p>
+        </div>
+    </div>
+
+    <section id="contact" class="footer-layout">
+        <div class="footer-box">
+            <h3>✉️ Contact Us (Sawalat Bhein)</h3><br>
+            <form action="/submit-contact" method="POST" style="color: black;">
+                <input type="text" name="name" placeholder="Aapka Naam" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none;"><br>
+                <input type="tel" name="phone" placeholder="Mobile Number" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none;"><br>
+                <textarea name="msg" placeholder="Apna Sawal Ya Paigham Likhein..." rows="3" required style="width:100%; padding:10px; margin-bottom:10px; border-radius:4px; border:none;"></textarea>
+                <button type="submit" style="background:#ffcc00; color:#0b2240; font-weight:bold; padding:10px 20px; border:none; border-radius:4px; cursor:pointer;">Send Message</button>
+            </form>
+        </div>
+        
+        <div class="footer-box">
+            <h3>📍 School Location Map</h3><br>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13544.757829777174!2d74.14812835!3d32.06282825!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391f2a3ff4c8525b%3A0x67ef2cb250dbf6c2!2sKohlowala%2C%20Gujranwala%2C%20Punjab!5e0!3m2!1sen!2s!4v1710000000000!5m2!1sen!2s" width="100%" height="200" style="border:0; border-radius:6px;" allowfullscreen="" loading="lazy"></iframe>
+            <p style="margin-top:10px; font-size:14px; color:#ffcc00;">📞 Principal Ishfaq Gill: 0305-4242644</p>
+        </div>
+    </section>
+
+    <footer style="background:#051427; color:white; text-align:center; padding:15px; font-size:14px;">
+        <p>© 2026 Shahzaib High School Kohlowala. Developed Securely.</p>
+    </footer>
+
+    <script>
+        // Populate Years
+        const yearSelect = document.getElementById('yearInput');
+        for (let y = 2026; y >= 2010; y--) {
+            let opt = document.createElement('option'); opt.value = y; opt.innerHTML = y; yearSelect.appendChild(opt);
+        }
+
+        // Fetch Live Notices for Marquee Scrolling Text
+        fetch('/api/notices').then(res => res.json()).then(data => {
+            if(data.length) {
+                document.getElementById('marqueeText').innerText = data.map(n => `📢 ${n.text} (${n.date})`).join('  |  ');
+            } else {
+                document.getElementById('marqueeText').innerText = "Shahzaib High School Kohlowala mein khush aamdeed! Naye dakhlay jari hain.";
+            }
+        });
+
+        function openModal(id) {
+            document.getElementById(id).style.display = "flex";
+            if (id === 'photoModal') {
+                fetch('/api/photos').then(res => res.json()).then(data => {
+                    document.getElementById('galleryContainer').innerHTML = data.length ? data.map(p => `<div class="gallery-item"><img src="${p.url}"><p><b>${p.caption}</b></p></div>`).join('') : '<p>No photos.</p>';
+                });
+            }
+        }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+        function searchStudentResult() {
+            const rollNo = document.getElementById('rollNoInput').value;
+            const year = document.getElementById('yearInput').value;
+            if(!rollNo) return alert("Roll number likhein!");
+
+            fetch(`/api/search-result?roll_no=${rollNo}&year=${year}`).then(res => res.json()).then(resData => {
+                if(resData.success) {
+                    document.getElementById('errorMsg').style.display = "none";
+                    document.getElementById('resultCard').style.display = "block";
+                    document.getElementById('resName').innerText = resData.data.name;
+                    document.getElementById('resClass').innerText = resData.data.student_class;
+                    document.getElementById('resYear').innerText = resData.data.year;
+                    document.getElementById('resMarks').innerText = resData.data.marks;
+                    document.getElementById('resStatus').innerText = resData.data.status;
+                    document.getElementById('resStatus').style.color = resData.data.status === 'Pass' ? 'green' : 'red';
+                } else {
+                    document.getElementById('resultCard').style.display = "none";
+                    document.getElementById('errorMsg').style.display = "block";
+                    document.getElementById('errorMsg').innerText = resData.message;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
