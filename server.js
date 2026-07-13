@@ -1,4 +1,4 @@
-require('dotenv').config(); // 🔴 Load environment variables at the very top
+require('dotenv').config(); // Load environment variables at the very top
 const express = require('express');
 const bodyParser = require('body-parser');
 const session = require('express-session');
@@ -17,7 +17,7 @@ mongoose.connect(MONGO_URI)
     .then(() => console.log("🎉 MongoDB Server Se Connect Ho Gaya Hai!"))
     .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// 🔴 SARE MODELS KO EK HI DAFA UPAR TOP PAR DEFINE KAR DIYA (Duplicate crash safe)
+// 🔴 SARE MODELS KO EK HI DAFA UPAR TOP PAR DEFINE KAR DIYA (Safe against OverwriteModelError)
 const Notice = mongoose.model('Notice', { text: String, date: String });
 const Photo = mongoose.model('Photo', { url: String, caption: String });
 const Message = mongoose.model('Message', { name: String, phone: String, msg: String, date: String });
@@ -25,7 +25,7 @@ const Result = mongoose.model('Result', { roll_no: String, name: String, student
 const Creds = mongoose.model('Cred', { email: String, password: String });
 const Admission = mongoose.model('Admission', { student_name: String, father_name: String, student_class: String, phone: String, address: String, date: String });
 
-// Default Admin Credentials Setup (.env se verify karega)
+// Default Admin Credentials Setup
 async function initAdmin() {
     try {
         const count = await Creds.countDocuments();
@@ -110,7 +110,7 @@ app.post('/admin/login', async (req, res) => {
     }
 });
 
-// Admin Panel Submission Handlers
+// Admin Actions
 app.post('/admin/upload-photo', isAuthenticated, async (req, res) => {
     await Photo.create({ url: req.body.photo_url, caption: req.body.caption });
     res.redirect('/admin/dashboard');
@@ -196,7 +196,7 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
                     <form action="/admin/upload-result" method="POST" style="display:flex;flex-wrap:wrap;gap:10px;">
                         <input type="text" name="roll_no" placeholder="Roll No" required style="width:48%;">
                         <input type="text" name="student_name" placeholder="Student Name" required style="width:48%;">
-                        <select name="student_class" required style="width:48%;"><option value="">Class</option>${Array.from({length:10},(_, i)=>`<option value="Class ${i+1}">Class ${i+1}</option>`).join('')}</select>
+                        <select name="student_class" required style="width:48%;"><option value="">Class</option>${Array.from({length:10},(_,i)=>`<option value="Class ${i+1}">Class ${i+1}</option>`).join('')}</select>
                         <select name="year" required style="width:48%;"><option value="">Year</option>${yearOptions}</select>
                         <input type="text" name="marks" placeholder="Marks (450/500)" required style="width:48%;">
                         <select name="status" style="width:48%;"><option value="Pass">Pass</option><option value="Fail">Fail</option></select>
@@ -217,7 +217,10 @@ app.get('/admin/dashboard', isAuthenticated, async (req, res) => {
     `);
 });
 
-app.get('/admin/logout', (req, res) => { req.session.destroy(() => res.redirect('/admin')); });
+// 🔴 FIX: Logout hone par ab seedha Home page (/) par redirect karega
+app.get('/admin/logout', (req, res) => { 
+    req.session.destroy(() => res.redirect('/')); 
+});
 
-// 🔴 Render Network Proxy fix: '0.0.0.0' explicitly bound
+// Render Network Routing Fix: binding explicitly to '0.0.0.0'
 app.listen(PORT, '0.0.0.0', () => console.log(`🚀 Server running perfectly on port ${PORT}`));
